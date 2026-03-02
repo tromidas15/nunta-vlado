@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alexandru & Ruxandra - Invitație la Nuntă</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="invitatie-nunta.css">
+</head>
+<body>
+    <div class="invitation">
+        <!-- Decorative vine pattern -->
+        <div class="vine-pattern vine-top"></div>
+        <div class="vine-pattern vine-left"></div>
+        <div class="vine-pattern vine-right"></div>
+        <div class="vine-pattern vine-bottom"></div>
+
+        <!-- Monogram -->
+        <div class="monogram">
+            <img
+                src="./s.png"
+                alt="Monograma Alexandru &amp; Ruxandra"
+                class="monogram-logo"
+            />
+        </div>
+
+        <!-- Opening -->
+        <p class="opening">Noi,</p>
+        <div class="family-names">
+            <span class="family-left">Vlădoianu</span>
+            <span class="family-right">Dobrițoiu</span>
+        </div>
+
+        <!-- Main couple names -->
+        <h1 class="couple-names">Alexandru & Ruxandra</h1>
+
+        <!-- Invitation phrase -->
+        <p class="invitation-phrase">Vă invităm să ne fiți alături vineri</p>
+        <p class="date">10 Iulie 2026</p>
+
+        <!-- Godparents -->
+        <p class="godparents-intro">Prieteni de suflet și părinții spirituali ne vor fi nașii:</p>
+        <p class="godparents-names">Vlad & Raluca Burada</p>
+
+        <!-- Venue -->
+        <p class="venue-intro">Atât cununia civilă, ceremonia religioasă și petrecerea vor avea loc la:</p>
+        <p class="venue-name">
+            <a href="https://www.google.com/maps/search/?api=1&query=44.316214699999996,23.8658115" target="_blank" rel="noopener">
+                Hanul Andriței <span class="venue-room">(Bellagio Ballroom)</span>
+            </a>
+        </p>
+
+        <!-- Event times -->
+        <div class="event-times">
+            <div class="event-item">
+                <svg class="event-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2L4 6v6c0 5.55 3.84 10.74 8 12 4.16-1.26 8-6.45 8-12V6l-8-4z"/>
+                    <path d="M12 8v4l2 2"/>
+                </svg>
+                <span class="event-time">16:30</span>
+            </div>
+            <div class="event-item">
+                <svg class="event-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M8 21h8"/>
+                    <path d="M12 21v-8"/>
+                    <path d="M6 13c-2-2-2-5 0-7 2-2 5-2 7 0 2 2 2 5 0 7"/>
+                    <path d="M18 13c2-2 2-5 0-7-2-2-5-2-7 0"/>
+                    <path d="M6 13l2 2"/>
+                    <path d="M16 13l2 2"/>
+                </svg>
+                <span class="event-time">19:30</span>
+            </div>
+        </div>
+
+        <p class="closing">Vă așteptăm cu drag!</p>
+
+        <!-- Countdown -->
+        <section class="countdown-section">
+            <p class="countdown-title">Până la ziua cea mare au mai rămas:</p>
+            <div class="countdown-timer" id="countdown">
+                <div class="countdown-part">
+                    <span class="countdown-number" id="days">0</span>
+                    <span class="countdown-label">zile</span>
+                </div>
+                <div class="countdown-part">
+                    <span class="countdown-number" id="hours">0</span>
+                    <span class="countdown-label">ore</span>
+                </div>
+                <div class="countdown-part">
+                    <span class="countdown-number" id="minutes">0</span>
+                    <span class="countdown-label">minute</span>
+                </div>
+                <div class="countdown-part">
+                    <span class="countdown-number" id="seconds">0</span>
+                    <span class="countdown-label">secunde</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact -->
+        <div class="contact">
+            <div class="contact-left">
+                <span class="contact-name">Alexandru</span>
+                <a href="tel:0767362605" class="contact-phone">0767362605</a>
+            </div>
+            <div class="contact-right">
+                <span class="contact-name">Ruxandra</span>
+                <a href="tel:0786441447" class="contact-phone">0786441447</a>
+            </div>
+        </div>
+
+        <p class="rsvp">Vă rugăm să confirmați prezența până pe 25 iunie 2026</p>
+
+        <!-- Google Map -->
+        <section class="map-section">
+            <p class="map-title">Locație</p>
+            <div class="map-wrapper">
+                <a class="map-link-button" href="https://www.google.com/maps/search/?api=1&query=44.316214699999996,23.8658115" target="_blank" rel="noopener">
+                    <span class="map-icon">📍</span>
+                    <span class="map-text">Deschide în Google Maps</span>
+                </a>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        (function () {
+            // 10 July 2026, 16:30 local time
+            var eventDate = new Date(2026, 6, 10, 16, 30, 0).getTime();
+
+            function updateCountdown() {
+                var now = new Date().getTime();
+                var distance = eventDate - now;
+
+                if (distance <= 0) {
+                    document.getElementById('countdown').innerHTML = '<span class="countdown-finished">Astăzi este ziua noastră!</span>';
+                    return;
+                }
+
+                var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                document.getElementById('days').textContent = days;
+                document.getElementById('hours').textContent = hours;
+                document.getElementById('minutes').textContent = minutes;
+                document.getElementById('seconds').textContent = seconds;
+            }
+
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        })();
+    </script>
+</body>
+</html>
