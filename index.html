@@ -10,6 +10,11 @@
     <link rel="stylesheet" href="invitatie-nunta.css">
 </head>
 <body>
+    <!-- Loading overlay for RSVP -->
+    <div id="loadingOverlay" class="loading-overlay" aria-hidden="true">
+        <div class="loading-spinner"></div>
+    </div>
+
     <div class="invitation">
         <!-- Decorative vine pattern -->
         <div class="vine-pattern vine-top"></div>
@@ -111,7 +116,18 @@
             </div>
         </div>
 
-        <p class="rsvp">Vă rugăm să confirmați prezența până pe 25 iunie 2026</p>
+        <!-- Confirmation (RSVP) -->
+        <section class="confirmation-section">
+            <p class="confirmation-intro">Vă rugăm să confirmați prezența până pe 25 iunie 2026</p>
+            <div class="confirmation-form">
+                <label class="confirmation-label" for="rsvp-name">Nume</label>
+                <input id="rsvp-name" class="confirmation-input" type="text" placeholder="Numele dumneavoastră" />
+                <label class="confirmation-label" for="rsvp-number">Număr de persoane</label>
+                <input id="rsvp-number" class="confirmation-input" type="number" min="1" max="20" placeholder="Ex: 2" />
+                <button type="button" class="confirmation-button" onclick="submitRSVP()">Confirmați</button>
+            </div>
+            <p id="rsvp-status" class="confirmation-status"></p>
+        </section>
 
         <!-- Google Map -->
         <section class="map-section">
@@ -153,6 +169,87 @@
             updateCountdown();
             setInterval(updateCountdown, 1000);
         })();
+
+        // ----- RSVP: Google Apps Script URLs (replace with your own when ready) -----
+        var APPS_SCRIPT_URL_GET = "https://script.google.com/macros/s/AKfycbxBndQk8exCBMT4n-CzjFxAOu-g3ZmTCb4D6Yw1e1roGt2sXr19pbkMNdyYmna6EKCp/exec";
+        var APPS_SCRIPT_URL_SUBMIT = "https://script.google.com/macros/s/AKfycbyX5Ddkw3mBBXmRHm1zFd0LXJ0FIyJKxPe1wq4ix2cN2b4zo-CbMyeppdClg7KCnTQn/exec";
+
+        var rsvpStatusEl = document.getElementById('rsvp-status');
+        var rsvpNameInput = document.getElementById('rsvp-name');
+        var rsvpNumberInput = document.getElementById('rsvp-number');
+        var loadingOverlay = document.getElementById('loadingOverlay');
+        var userIp = "";
+
+        function showLoading() {
+            if (loadingOverlay) loadingOverlay.style.display = 'flex';
+        }
+        function hideLoading() {
+            if (loadingOverlay) loadingOverlay.style.display = 'none';
+        }
+
+        showLoading();
+        fetch("https://api.ipify.org?format=json")
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                userIp = data.ip || "";
+                if (userIp) checkExistingRSVP(userIp);
+                else hideLoading();
+            })
+            .catch(function() { hideLoading(); });
+
+        function checkExistingRSVP(ip) {
+            var stored = localStorage.getItem('rsvp_ip');
+            if (stored) ip = stored;
+            var url = APPS_SCRIPT_URL_GET + "?ip=" + encodeURIComponent(ip);
+            fetch(url)
+                .then(function(res) { return res.json(); })
+                .then(function(data) {
+                    if (data.success && data.rows && data.rows.length > 0) {
+                        var row = data.rows[0];
+                        if (rsvpNameInput) rsvpNameInput.value = row.name || "";
+                        if (rsvpNumberInput) rsvpNumberInput.value = row.number || "";
+                    }
+                })
+                .catch(function() {})
+                .finally(hideLoading);
+        }
+
+        function submitRSVP() {
+            var nameVal = (rsvpNameInput && rsvpNameInput.value) ? rsvpNameInput.value.trim() : "";
+            var numberVal = (rsvpNumberInput && rsvpNumberInput.value) ? String(rsvpNumberInput.value).trim() : "";
+
+            if (!nameVal) {
+                if (rsvpStatusEl) rsvpStatusEl.textContent = "Vă rugăm să completați numele pentru confirmare.";
+                return;
+            }
+            if (!numberVal) {
+                if (rsvpStatusEl) rsvpStatusEl.textContent = "Vă rugăm să completați numărul de persoane.";
+                return;
+            }
+            if (!userIp) {
+                if (rsvpStatusEl) rsvpStatusEl.textContent = "Nu am putut detecta adresa. Reîncercați.";
+                return;
+            }
+
+            var url = APPS_SCRIPT_URL_SUBMIT + "?ip=" + encodeURIComponent(userIp) + "&name=" + encodeURIComponent(nameVal) + "&number=" + encodeURIComponent(numberVal);
+            if (rsvpStatusEl) rsvpStatusEl.textContent = "";
+            showLoading();
+            fetch(url)
+                .then(function(res) { return res.json(); })
+                .then(function(data) {
+                    if (data.success) {
+                        localStorage.setItem('rsvp_ip', userIp);
+                        var plural = numberVal === "1" ? "ă" : "e";
+                        if (rsvpStatusEl) rsvpStatusEl.textContent = "Mulțumim, " + nameVal + "! Confirmare înregistrată cu " + numberVal + " persoan" + plural + ".";
+                    } else {
+                        if (rsvpStatusEl) rsvpStatusEl.textContent = "Eroare: " + (data.error || "nu s-a putut salva.");
+                    }
+                })
+                .catch(function(err) {
+                    if (rsvpStatusEl) rsvpStatusEl.textContent = "A apărut o eroare la trimitere: " + (err.message || "reîncercați.");
+                })
+                .finally(hideLoading);
+        }
     </script>
 </body>
 </html>
